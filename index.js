@@ -1,35 +1,15 @@
-require('dotenv/config');
-const discord = require('discord.js');
+const {Client, GatewayIntentBits, Partials} = require('discord.js');
+const {Guilds, GuildMembers, GuildMessages, MessageContent} = GatewayIntentBits;
+const {User, Message, GuildMember, ThreadMember, Channel} = Partials;
 
-const client = new discord.Client({
-    intents: [
-        discord.GatewayIntentBits.Guilds,
-        discord.GatewayIntentBits.GuildMessages,
-        discord.GatewayIntentBits.GuildMembers,
-        discord.GatewayIntentBits.MessageContent,
-        discord.GatewayIntentBits.DirectMessages
-    ],
-    partials: [
-        discord.Partials.Message,
-        discord.Partials.Channel,
-        discord.Partials.GuildMember,
-        discord.Partials.User,
-        discord.Partials.GuildScheduledEvent
-    ]
+const client = new Client({
+    intents: [Guilds, GuildMessages, GuildMembers, MessageContent],
+    partials: [User, Message, GuildMember, ThreadMember, Channel]
 });
 
-client.on('ready', () => {
-    console.log(`${client.user.username} is online.`)
+const {loadEvents} = require('./Handlers/eventHandler');
+
+client.config = require('./config.json');
+client.login(client.config.token).then(() => {
+    loadEvents(client);
 });
-
-const CHANNELS = ['1188317266757029898'];
-
-client.on('messageCreate', async (message) => {
-    if (message.author.bot) return;
-    if (message.content.startsWith("!")) return;
-    if (!CHANNELS.includes(message.channelId) && !message.mentions.users.has(client.user.id)) return;
-
-    message.reply("You said: " + message.content);
-});
-
-client.login(process.env.TOKEN)
