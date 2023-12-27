@@ -31,7 +31,9 @@ module.exports = {
             };
         });
 
-        const embed = new EmbedBuilder().setDescription("Please choose a category from the dropdown menu");
+        const embed = new EmbedBuilder()
+            .setDescription("Please choose a category from the dropdown menu")
+            .setColor('203D46');
 
         const components = (state) => [
             new ActionRowBuilder().addComponents(
@@ -73,6 +75,7 @@ module.exports = {
             const categoryEmbed = new EmbedBuilder()
                 .setTitle(`${formatString(directory)} Commands`)
                 .setDescription(`A list of all the commands categorized under ${directory}`)
+                .setColor('203D46')
                 .addFields(
                     category.commands.map((cmd) => {
                         return {
