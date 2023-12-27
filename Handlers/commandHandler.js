@@ -12,7 +12,8 @@ function loadCommands(client) {
         for (const file of files) {
             const command = require(`../Commands/${folder}/${file}`);
 
-            client.commands.set(command.data.name, command);
+            const properties = {folder, ...command};
+            client.commands.set(command.data.name, properties);
             commandsArray.push(command.data.toJSON());
 
             table.addRow(file, 'loaded');
