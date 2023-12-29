@@ -5,10 +5,10 @@ const { formatHourTime, formatMinTime, timeLeft} = require('../../Handlers/timeH
 module.exports = {
 
     data: new SlashCommandBuilder()
-        .setName('task')
+        .setName('new')
         .setDescription('Create a new task.')
         .addStringOption(option =>
-            option.setName('name')
+            option.setName('task')
                 .setDescription('Name your task.')
                 .setRequired(true)
         )
@@ -40,7 +40,7 @@ module.exports = {
                     .setStyle(ButtonStyle.Danger)
             );
 
-            const name = options.getString('name');
+            const name = options.getString('task');
             const due = options.getString('due');
             const at = options.getString('at');
 
