@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 const {loadUserData, saveUserData, getTaskIdx, updateTask, getDueDate} = require('../../Handlers/dataHandler');
-const { formatHourTime, formatMinTime, timeLeft} = require('../../Handlers/timeHandler');
+const { formatHourTime, formatMinTime, timeLeft, convertTimezone} = require('../../Handlers/timeHandler');
 
 module.exports = {
 
@@ -81,8 +81,10 @@ module.exports = {
                             return;
                         }
                     }
+                    
+                    const currentTimeInUserTimezone = convertTimezone(new Date());
 
-                    if (dueDate < new Date()) {
+                    if (currentTimeInUserTimezone > dueDate) {
                         await interaction.reply({content: 'The due date and time cannot be before the present. Please enter a valid date and time.', ephemeral: true});
                         return;
                     }
@@ -178,8 +180,10 @@ module.exports = {
                             hours,
                             minutes
                         );
+
+                        const currentTimeInUserTimezone = convertTimezone(new Date());
                         
-                        if (dueDate < new Date()) {
+                        if (currentTimeInUserTimezone > dueDate) {
                             await interaction.reply({ content: 'The due date and time cannot be before the present. Please enter a valid date and time.', ephemeral: true });
                             return;
                         }

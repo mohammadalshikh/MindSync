@@ -1,3 +1,5 @@
+const moment = require('moment-timezone');
+
 function timeLeft(dueDate) {
     const timeMS = dueDate.getTime() - Date.now();
     if (timeMS < 0) return -1;
@@ -17,8 +19,13 @@ function formatMinTime(time) {
     return time < 10 ? `0${time}` : `${time}`;
 }
 
+function convertTimezone(date) {
+  return moment(date).subtract(5, "hours").toDate();
+}
+
 module.exports = {
     timeLeft,
     formatHourTime,
-    formatMinTime
+    formatMinTime,
+    convertTimezone
 };
