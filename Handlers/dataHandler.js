@@ -96,6 +96,25 @@ function getMessageId(userId, taskName) {
     }
 }
 
+function getMessageState(userId, taskName) {
+    const userData = loadUserData();
+    const taskIndex = getTaskIdx(userId, taskName);
+
+    if (userData[userId] && userData[userId][taskIndex]) {
+        return userData[userId][taskIndex].deletedMsg;
+    }
+}
+
+function setMessageState(userId, taskName) {
+    const userData = loadUserData();
+    const taskIndex = getTaskIdx(userId, taskName);
+
+    if (userData[userId] && userData[userId][taskIndex]) {
+        userData[userId][taskIndex].deletedMsg = true
+    }
+    saveUserData(userData)
+}
+
 
 module.exports = {
     loadUserData,
@@ -107,5 +126,7 @@ module.exports = {
     getInterval,
     getStatus,
     getMessageId,
+    getMessageState,
+    setMessageState,
 };
 

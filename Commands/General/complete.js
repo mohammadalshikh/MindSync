@@ -26,7 +26,7 @@ module.exports = {
                     await interaction.reply({ content: `This task is already completed. You can check the list of current tasks by executing \`/list\` command.`, ephemeral: true })
                     return
                 } else if (status == 'Unfinished') {
-                    await interaction.reply({ content: `This task is set to unfinished. You may not complete it now. You can check the list of current tasks by executing \`/list\` command.`, ephemeral: true })
+                    await interaction.reply({ content: `This task's due date has passed, and you may not complete it now. You can check the list of current tasks by executing \`/list\` command.`, ephemeral: true })
                     return
                 } else {
                     dueDate = getDueDate(user.id, name)
@@ -61,16 +61,16 @@ module.exports = {
                             clearInterval(getInterval(user.id, name))
                             updateTask(user.id, name, 'Completed')
                         
-                            try {
-                                const messageId = getMessageId(user.id, name)
-                                const message = await interaction.channel.messages.fetch(messageId);
-                                await message.edit({
-                                    components: []
-                                });
-                                console.log("Components removed successfully.");
-                            } catch (error) {
-                                console.error("Error removing components:", error);
-                            }
+                            // try {
+                            //     const messageId = getMessageId(user.id, name)
+                            //     const message = await interaction.channel.messages.fetch(messageId);
+                            //     await message.edit({
+                            //         components: []
+                            //     });
+                            //     console.log("Components removed successfully.");
+                            // } catch (error) {
+                            //     console.error("Error removing components:", error);
+                            // }
                             
                             await interaction.reply({
                                 embeds: [embed],

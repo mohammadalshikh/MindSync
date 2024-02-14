@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const {loadUserData, saveUserData, getTaskIdx, updateTask, getDueDate} = require('../../Handlers/dataHandler');
+const {loadUserData, saveUserData, getTaskIdx, updateTask, getDueDate, getMessageState} = require('../../Handlers/dataHandler');
 const { formatHourTime, formatMinTime, timeLeft, convertTimezone} = require('../../Handlers/timeHandler');
 
 module.exports = {
@@ -119,11 +119,13 @@ module.exports = {
                                 )
                                 .setColor('Orange');
                             updateTask(user.id, name, 'Unfinished');
-                            initialMessage.message.edit({
-                                content: `\`\`(Task Unfinished)\`\``,
-                                embeds: [updatedEmbed],
-                                components: [],
-                            });
+                            if (getMessageState(user.id, name) == false) {
+                                initialMessage.edit({
+                                    content: `\`\`(Task Unfinished)\`\``,
+                                    embeds: [updatedEmbed],
+                                    components: [],
+                                });
+                            } 
                             clearInterval(interval);
                             return;
                         } else {
@@ -135,11 +137,13 @@ module.exports = {
                                     { name: 'Status', value: 'In progress', inline: false },
                                 )
                                 .setColor('203D46');
-
-                            initialMessage.edit({
-                                embeds: [updatedEmbed],
-                                components: [buttons],
-                            });
+                            
+                            if (getMessageState(user.id, name) == false) {
+                                initialMessage.edit({
+                                    embeds: [updatedEmbed],
+                                    components: [buttons],
+                                });
+                            }
                         }
                     }, 10000);
 
@@ -149,6 +153,7 @@ module.exports = {
                         status: 'In progress',
                         interval: `${interval}`,
                         messageId: initialMessage.id,
+                        deletedMsg: false
                     };
 
                     if (!userData[user.id]) {
@@ -205,7 +210,6 @@ module.exports = {
                             components: [buttons],
                             content: 'Successfully created a new task:'
                         });
-
                         const interval = setInterval(() => {
                             const dueDate = getDueDate(user.id, name)
                             const updatedTime = timeLeft(dueDate);
@@ -219,11 +223,14 @@ module.exports = {
                                     )
                                     .setColor('Orange');
                                 updateTask(user.id, name, 'Unfinished');
-                                initialMessage.edit({
-                                    content: `\`\`(Task Unfinished)\`\``,
-                                    embeds: [updatedEmbed],
-                                    components: [],
-                                });
+                                
+                                if (getMessageState(user.id, name) == false) {
+                                    initialMessage.edit({
+                                        content: `\`\`(Task Unfinished)\`\``,
+                                        embeds: [updatedEmbed],
+                                        components: [],
+                                    });
+                                }
                                 clearInterval(interval);
                                 return;
                             } else {
@@ -236,10 +243,12 @@ module.exports = {
                                     )
                                     .setColor('203D46');
 
-                                initialMessage.edit({
-                                    embeds: [updatedEmbed],
-                                    components: [buttons],
-                                });
+                                if (getMessageState(user.id, name) == false) {
+                                    initialMessage.edit({
+                                        embeds: [updatedEmbed],
+                                        components: [buttons],
+                                    })
+                                }
                             }
                         }, 10000);
 
@@ -249,6 +258,7 @@ module.exports = {
                             status: 'In progress',
                             interval: `${interval}`,
                             messageId: initialMessage.id,
+                            deletedMsg: false
                             };
 
                         if (!userData[user.id]) {
@@ -282,6 +292,7 @@ module.exports = {
                         status: 'In progress',
                         interval: null,
                         messageId: initialMessage.id,
+                        deletedMsg: false
                     };
 
                     if (!userData[user.id]) {
