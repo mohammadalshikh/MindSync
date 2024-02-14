@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder} = require('discord.js');
-const { loadUserData } = require('../../Handlers/dataHandler');
+const { loadUserData, updateTask } = require('../../Handlers/dataHandler');
 const { formatHourTime, formatMinTime, timeLeft } = require('../../Handlers/timeHandler');
 
 module.exports = {
@@ -29,7 +29,19 @@ module.exports = {
             } else if (task.status === 'Unfinished') {
                 unfinishedTasks.push({ name: task.name, due: task.due});
             } else {
-                inProgressTasks.push({ name: task.name, due: task.due});
+                dueDate = new Date(task.due)
+                if (dueDate.toDateString() != 'Wed Dec 31 1969') {
+                    const time = timeLeft(dueDate)
+                    if (time == -1) {
+                        clearInterval(user.id, task.name)
+                        updateTask(user.id, task.name, 'Unfinished')
+                        unfinishedTasks.push({ name: task.name, due: task.due });
+                    } else {
+                        inProgressTasks.push({ name: task.name, due: task.due });
+                    }
+                } else {
+                    inProgressTasks.push({ name: task.name, due: task.due });
+                }
             }
         }
 

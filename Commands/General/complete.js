@@ -5,7 +5,7 @@ const { timeLeft, formatHourTime, formatMinTime } = require('../../Handlers/time
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('complete')
-        .setDescription('Complete a waiting task.')
+        .setDescription('Complete a pending task.')
         .addStringOption(option =>
             option.setName('task')
                 .setDescription('Enter task name.')

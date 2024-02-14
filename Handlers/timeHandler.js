@@ -20,7 +20,20 @@ function formatMinTime(time) {
 }
 
 function convertTimezone(date) {
-  return moment(date).subtract(5, "hours").toDate();
+    const inputDate = new Date(date);
+    const currentOffset = moment().utcOffset() / 60;
+    var newYorkTime = moment.tz("America/New_York").format();
+    newYorkTime = newYorkTime.substring(0, newYorkTime.length - 6);
+    const offsetDate = new Date(newYorkTime);
+    const offset = offsetDate.getUTCHours();
+    if (currentOffset == 0) {
+        if (offset % 5 == 0) {
+            inputDate.setHours(inputDate.getHours() - 5);
+        } else {
+            inputDate.setHours(inputDate.getHours() - 4);
+        }
+    }
+    return inputDate.getTime();
 }
 
 module.exports = {

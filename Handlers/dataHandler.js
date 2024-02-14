@@ -53,7 +53,7 @@ function getTaskIdx(userId, taskName) {
     const userTasks = userData[userId];
     
     if (userTasks) {
-        const taskIndex = userTasks.findIndex(task => task.name === taskName);
+        const taskIndex = userTasks.findIndex(task => task.name.toLowerCase() === taskName.toLowerCase());
         return taskIndex;
     }
     return -1;
