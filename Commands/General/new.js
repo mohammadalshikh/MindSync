@@ -29,20 +29,20 @@ module.exports = {
 
             const {options, user} = interaction;
 
-            const buttons = new ActionRowBuilder().addComponents(
-                new ButtonBuilder()
-                    .setCustomId(`task-complete-${user.id}`)
-                    .setLabel('Complete')
-                    .setStyle(ButtonStyle.Success),
-                new ButtonBuilder()
-                    .setCustomId(`task-delete-${user.id}`)
-                    .setLabel('Delete')
-                    .setStyle(ButtonStyle.Danger)
-            );
-
             const name = options.getString('task');
             const due = options.getString('due');
             const at = options.getString('at');
+
+            const buttons = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId(`task-complete-${user.id}-${name}`)
+                    .setLabel('Complete')
+                    .setStyle(ButtonStyle.Success),
+                new ButtonBuilder()
+                    .setCustomId(`task-delete-${user.id}-${name}`)
+                    .setLabel('Delete')
+                    .setStyle(ButtonStyle.Danger)
+            );
 
             if (getTaskIdx(user.id, name) != -1) {
                 await interaction.reply({ content: "You can't have two tasks with the same name. Please enter a different name for your task.", ephemeral: true});
@@ -141,13 +141,14 @@ module.exports = {
                                 components: [buttons],
                             });
                         }
-                    }, 60000);
+                    }, 10000);
 
                     const taskData = {
                         name: name,
                         due: dueDate,
                         status: 'In progress',
-                        interval: `${interval}`
+                        interval: `${interval}`,
+                        messageId: initialMessage.id,
                     };
 
                     if (!userData[user.id]) {
@@ -240,14 +241,15 @@ module.exports = {
                                     components: [buttons],
                                 });
                             }
-                        }, 60000);
+                        }, 10000);
 
                         const taskData = {
                             name: name,
                             due: dueDate,
                             status: 'In progress',
-                            interval: `${interval}`
-                        };
+                            interval: `${interval}`,
+                            messageId: initialMessage.id,
+                            };
 
                         if (!userData[user.id]) {
                             userData[user.id] = [];
@@ -268,7 +270,7 @@ module.exports = {
                         )
                         .setColor('203D46');
 
-                    await interaction.reply({
+                    const initialMessage = await interaction.reply({
                         embeds: [embed],
                         components: [buttons],
                         content: 'Successfully created a new task:',
@@ -279,6 +281,7 @@ module.exports = {
                         due: null,
                         status: 'In progress',
                         interval: null,
+                        messageId: initialMessage.id,
                     };
 
                     if (!userData[user.id]) {

@@ -26,32 +26,36 @@ function saveUserData(userData) {
 function updateTask(userId, taskName, status) {
     const userData = loadUserData();
     const taskIndex = getTaskIdx(userId, taskName);
+    
     if (userData[userId] && userData[userId][taskIndex]) {
         userData[userId][taskIndex].interval = null;
         userData[userId][taskIndex].status = status;
         saveUserData(userData);
+        return true;
     }
+    return false
 }
 
 function deleteTask(userId, taskName) {
     const userData = loadUserData();
     const taskIndex = getTaskIdx(userId, taskName);
-
+        
     if (userData[userId] && userData[userId][taskIndex]) {
-        userData[userId].splice(taskIndex, 1);
-        saveUserData(userData);
-    }
+            userData[userId].splice(taskIndex, 1);
+            saveUserData(userData);
+            return true
+        }
+    return false 
 }
 
 function getTaskIdx(userId, taskName) {
     const userData = loadUserData();
     const userTasks = userData[userId];
-
+    
     if (userTasks) {
         const taskIndex = userTasks.findIndex(task => task.name === taskName);
         return taskIndex;
     }
-
     return -1;
 }
 
@@ -71,7 +75,27 @@ function getInterval(userId, taskName) {
     if (userData[userId] && userData[userId][taskIndex]) {
         return userData[userId][taskIndex].interval;
     }
+    return -1
 }
+
+function getStatus(userId, taskName) {
+    const userData = loadUserData();
+    const taskIndex = getTaskIdx(userId, taskName);
+
+    if (userData[userId] && userData[userId][taskIndex]) {
+        return userData[userId][taskIndex].status;
+    }
+}
+
+function getMessageId(userId, taskName) {
+    const userData = loadUserData();
+    const taskIndex = getTaskIdx(userId, taskName);
+
+    if (userData[userId] && userData[userId][taskIndex]) {
+        return userData[userId][taskIndex].messageId;
+    }
+}
+
 
 module.exports = {
     loadUserData,
@@ -81,5 +105,7 @@ module.exports = {
     getTaskIdx,
     getDueDate,
     getInterval,
+    getStatus,
+    getMessageId,
 };
 

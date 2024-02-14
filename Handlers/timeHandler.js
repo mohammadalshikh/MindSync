@@ -1,7 +1,7 @@
 const moment = require('moment-timezone');
 
 function timeLeft(dueDate) {
-    const timeMS = dueDate.getTime() - Date.now();
+    const timeMS = dueDate.getTime() - convertTimezone(Date.now());
     if (timeMS < 0) return -1;
     return {
         days: Math.floor(timeMS / (1000 * 60 * 60 * 24)),
