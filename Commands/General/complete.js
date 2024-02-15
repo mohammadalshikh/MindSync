@@ -29,8 +29,9 @@ module.exports = {
                     await interaction.reply({ content: `This task's due date has passed, and you may not complete it now. You can check the list of current tasks by executing \`/list\` command.`, ephemeral: true })
                     return
                 } else {
-                    dueDate = getDueDate(user.id, name)
-                    if (dueDate.toDateString() != 'Wed Dec 31 1969') {
+                    date = getDueDate(user.id, name)
+                    if (date != null) {
+                        dueDate = new Date(date)
                         const time = timeLeft(dueDate)
                         if (time == -1) {
                             clearInterval(getInterval(user.id, name))

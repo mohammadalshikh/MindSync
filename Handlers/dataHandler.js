@@ -64,7 +64,7 @@ function getDueDate(userId, taskName) {
     const taskIndex = getTaskIdx(userId, taskName);
 
     if (userData[userId] && userData[userId][taskIndex]) {
-        return new Date(userData[userId][taskIndex].due);
+        return userData[userId][taskIndex].due;
     }
 }
 

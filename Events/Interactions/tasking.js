@@ -35,7 +35,7 @@ module.exports = {
                         embed.data.fields[1] = { name: 'Status', value: 'Completed', inline: false };
                         updateTask(member.user.id, embed.data.fields[0].value, 'Completed');
                     } else {
-                        const dueDate = getDueDate(member.user.id, embed.data.fields[0].value);
+                        const dueDate = new Date(getDueDate(member.user.id, embed.data.fields[0].value));
                         const time = timeLeft(dueDate);
                         if (time == -1) {
                             embed.data.fields[3] = { name: 'Status', value: 'Unfinished', inline: false };
@@ -75,8 +75,8 @@ module.exports = {
                         interaction.reply({ content: "An error has occurred while trying to delete your task.", ephemeral: true });
                     }
                 } else {
-                    const dueDate = getDueDate(member.user.id, name);
-                    if (dueDate.toDateString() == 'Wed Dec 31 1969') {
+                    const date = getDueDate(member.user.id, name)
+                    if (date == null) {
                         clearInterval(getInterval(member.user.id, name));
                         const res = updateTask(member.user.id, name, 'Completed');
                         await interaction.message.edit({
@@ -87,29 +87,31 @@ module.exports = {
                         if (res) {
                             return await interaction.reply({ content: `Task: ${name} is successfully completed! 💪` });
                         }
-                    }
-                    const time = timeLeft(dueDate);
-                    if (time == -1) {
-                        clearInterval(getInterval(member.user.id, name));
-                        updateTask(member.user.id, name, 'Unfinished');
-                        await interaction.message.edit({
-                            content: `\`\`(Task Unfinished)\`\``,
-                            embeds: [],
-                            components: []
-                        });
-                        return await interaction.reply({ content: 'The time allotted for this task has expired. You may not complete it now.', ephemeral: true });
                     } else {
-                        clearInterval(getInterval(member.user.id, name));
-                        const res = updateTask(member.user.id, name, 'Completed');
-                        await interaction.message.edit({
-                            content: `\`\`(Task Completed)\`\``,
-                            embeds: [],
-                            components: []
-                        });
-                        if (res) {
-                            return await interaction.reply({ content: `Task: ${name} is successfully completed! 💪` });
+                        dueDate = new Date(date)
+                        const time = timeLeft(dueDate);
+                        if (time == -1) {
+                            clearInterval(getInterval(member.user.id, name));
+                            updateTask(member.user.id, name, 'Unfinished');
+                            await interaction.message.edit({
+                                content: `\`\`(Task Unfinished)\`\``,
+                                embeds: [],
+                                components: []
+                            });
+                            return await interaction.reply({ content: 'The time allotted for this task has expired. You may not complete it now.', ephemeral: true });
                         } else {
-                            return await interaction.reply({ content: "An error has occurred while trying to complete your task.", ephemeral: true });
+                            clearInterval(getInterval(member.user.id, name));
+                            const res = updateTask(member.user.id, name, 'Completed');
+                            await interaction.message.edit({
+                                content: `\`\`(Task Completed)\`\``,
+                                embeds: [],
+                                components: []
+                            });
+                            if (res) {
+                                return await interaction.reply({ content: `Task: ${name} is successfully completed! 💪` });
+                            } else {
+                                return await interaction.reply({ content: "An error has occurred while trying to complete your task.", ephemeral: true });
+                            }
                         }
                     }
                 }

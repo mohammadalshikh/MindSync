@@ -29,8 +29,8 @@ module.exports = {
             } else if (task.status === 'Unfinished') {
                 unfinishedTasks.push({ name: task.name, due: task.due});
             } else {
-                dueDate = new Date(task.due)
-                if (dueDate.toDateString() != 'Wed Dec 31 1969') {
+                if (task.due != null) {
+                    dueDate = new Date(task.due)
                     const time = timeLeft(dueDate)
                     if (time == -1) {
                         clearInterval(user.id, task.name)

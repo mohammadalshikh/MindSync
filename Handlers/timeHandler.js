@@ -1,7 +1,7 @@
 const moment = require('moment-timezone');
 
 function timeLeft(dueDate) {
-    const timeMS = dueDate.getTime() - convertTimezone(Date.now());
+    const timeMS = dueDate.getTime() - getEstDate().getTime();
     if (timeMS < 0) return -1;
     return {
         days: Math.floor(timeMS / (1000 * 60 * 60 * 24)),
@@ -19,26 +19,16 @@ function formatMinTime(time) {
     return time < 10 ? `0${time}` : `${time}`;
 }
 
-function convertTimezone(date) {
-    const inputDate = new Date(date);
-    const currentOffset = moment().utcOffset() / 60;
-    var newYorkTime = moment.tz("America/New_York").format();
-    newYorkTime = newYorkTime.substring(0, newYorkTime.length - 6);
-    const offsetDate = new Date(newYorkTime);
-    const offset = offsetDate.getUTCHours();
-    if (currentOffset == 0) {
-        if (offset % 5 == 0) {
-            inputDate.setHours(inputDate.getHours() - 5);
-        } else {
-            inputDate.setHours(inputDate.getHours() - 4);
-        }
-    }
-    return inputDate.getTime();
+function getEstDate() {
+    var estString = moment.tz("America/New_York").format();
+    estString = estString.substring(0, estString.length - 6);
+    const estDate = new Date(estString);
+    return estDate;
 }
 
 module.exports = {
     timeLeft,
     formatHourTime,
     formatMinTime,
-    convertTimezone
+    getEstDate
 };
