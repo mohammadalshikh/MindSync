@@ -18,7 +18,7 @@ module.exports = {
             const name = options.getString('task');
 
             if (getTaskIdx(user.id, name) == -1) {
-                await interaction.reply({content: `Task with name: ${name} could not be found.`, ephemeral: true})
+                await interaction.reply({content: `Task with name: \`${name}\` could not be found.`, ephemeral: true})
                 return
             } else {
                 const status = getStatus(user.id, name)
@@ -58,11 +58,8 @@ module.exports = {
                                     { name: 'Status', value: 'Completed', inline: false },
                                 )
                                 .setColor('Green');
-    
-                            clearInterval(getInterval(user.id, name))
-                            updateTask(user.id, name, 'Completed')
                         
-                            interaction.channel.messages.fetch({limit: 100})
+                            await interaction.channel.messages.fetch({limit: 100})
                                 .then(messages => {
                                     const m = messages.filter(
                                         message => message.hasOwnProperty('components') &&
@@ -76,17 +73,19 @@ module.exports = {
                                             const embed = message.embeds[0];
                                             embed.data.fields[3] = { name: 'Status', value: 'Completed', inline: false }
                                             const completeEmbed = EmbedBuilder.from(embed).setColor('Green')
-
+                                            
                                             message.edit({
                                                 embeds: [completeEmbed],
                                                 components: []
                                             })
+                                            clearInterval(getInterval(user.id, name))
                                             console.log('Removed buttons from original message.')
                                         }
                                     })
                                 })
                                 .catch(console.error);
                             
+                            updateTask(user.id, name, 'Completed')
                             
                             await interaction.reply({
                                 embeds: [embed],
@@ -94,7 +93,6 @@ module.exports = {
                             })
                         }
                     } else {
-                        updateTask(user.id, name, 'Completed')
                         const embed = new EmbedBuilder()
                             .setFields(
                                 { name: 'Task', value: `${name}`, inline: false },
@@ -102,7 +100,7 @@ module.exports = {
                             )
                             .setColor('Green');
     
-                        interaction.channel.messages.fetch({ limit: 100 })
+                        await interaction.channel.messages.fetch({ limit: 100 })
                             .then(messages => {
                                 const m = messages.filter(
                                     message => message.hasOwnProperty('components') &&
@@ -121,11 +119,14 @@ module.exports = {
                                             embeds: [completeEmbed],
                                             components: []
                                         })
+                                        clearInterval(getInterval(user.id, name))
                                         console.log('Removed buttons from original message.')
                                     }
                                 })
                             })
                             .catch(console.error);
+
+                        updateTask(user.id, name, 'Completed')
 
                         await interaction.reply({
                             embeds: [embed],

@@ -11,7 +11,7 @@ module.exports = {
 
         const { user } = interaction;
         const userData = loadUserData();
-        const userTasks = userData[interaction.user.id];
+        const userTasks = userData[interaction.user.id].tasks;
 
         if (!userTasks || userTasks.length === 0) {
             await interaction.reply({ content: "You don't have any current or previous tasks.", ephemeral: true });

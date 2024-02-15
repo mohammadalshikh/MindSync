@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const { getTaskIdx, deleteTask, getInterval } = require('../../Handlers/dataHandler');
 
 module.exports = {
@@ -16,12 +16,10 @@ module.exports = {
             const name = options.getString('task');
 
             if (getTaskIdx(user.id, name) == -1) {
-                await interaction.reply({ content: `Task with name: ${name} could not be found.`, ephemeral: true})
+                await interaction.reply({ content: `Task with name \`${name}\` could not be found.`, ephemeral: true})
                 return
-            } else {
-                clearInterval(getInterval(user.id, name))
-                deleteTask(user.id, name)
-                interaction.channel.messages.fetch({ limit: 100 })
+            } else {                
+                await interaction.channel.messages.fetch({ limit: 100 })
                     .then(messages => {
                         const m = messages.filter(
                             message => message.hasOwnProperty('components') &&
@@ -31,14 +29,16 @@ module.exports = {
                         m.forEach((message, messageId) => {
                             if (message.components[0].components[0].data.custom_id.split('-')[2] == user.id
                                 && message.components[0].components[0].data.custom_id.split('-')[3] == name) {
-
+                                
                                 message.delete();
+                                clearInterval(getInterval(user.id, name))
                                 console.log('Original message is deleted.')
                             }
                         })
                     })
                     .catch(console.error);
-                
+
+                deleteTask(user.id, name)
                 await interaction.reply({ content: "Task is successfully deleted.", ephemeral: true });
                 return
             }

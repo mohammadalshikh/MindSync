@@ -27,9 +27,9 @@ function updateTask(userId, taskName, status) {
     const userData = loadUserData();
     const taskIndex = getTaskIdx(userId, taskName);
     
-    if (userData[userId] && userData[userId][taskIndex]) {
-        userData[userId][taskIndex].interval = null;
-        userData[userId][taskIndex].status = status;
+    if (userData[userId] && userData[userId].tasks[taskIndex]) {
+        userData[userId].tasks[taskIndex].interval = null;
+        userData[userId].tasks[taskIndex].status = status;
         saveUserData(userData);
         return true;
     }
@@ -40,8 +40,8 @@ function deleteTask(userId, taskName) {
     const userData = loadUserData();
     const taskIndex = getTaskIdx(userId, taskName);
         
-    if (userData[userId] && userData[userId][taskIndex]) {
-            userData[userId].splice(taskIndex, 1);
+    if (userData[userId] && userData[userId].tasks[taskIndex]) {
+            userData[userId].tasks.splice(taskIndex, 1);
             saveUserData(userData);
             return true
         }
@@ -50,12 +50,13 @@ function deleteTask(userId, taskName) {
 
 function getTaskIdx(userId, taskName) {
     const userData = loadUserData();
-    const userTasks = userData[userId];
-    
-    if (userTasks) {
-        const taskIndex = userTasks.findIndex(task => task.name.toLowerCase() === taskName.toLowerCase());
-        return taskIndex;
-    }
+    if (userData[userId]) {
+        const userTasks = userData[userId].tasks;
+        if (userTasks) {
+            const taskIndex = userTasks.findIndex(task => task.name.toLowerCase() === taskName.toLowerCase());
+            return taskIndex;
+        }
+    }  
     return -1;
 }
 
@@ -63,8 +64,8 @@ function getDueDate(userId, taskName) {
     const userData = loadUserData();
     const taskIndex = getTaskIdx(userId, taskName);
 
-    if (userData[userId] && userData[userId][taskIndex]) {
-        return userData[userId][taskIndex].due;
+    if (userData[userId] && userData[userId].tasks[taskIndex]) {
+        return userData[userId].tasks[taskIndex].due;
     }
 }
 
@@ -72,8 +73,8 @@ function getInterval(userId, taskName) {
     const userData = loadUserData();
     const taskIndex = getTaskIdx(userId, taskName);
 
-    if (userData[userId] && userData[userId][taskIndex]) {
-        return userData[userId][taskIndex].interval;
+    if (userData[userId] && userData[userId].tasks[taskIndex]) {
+        return userData[userId].tasks[taskIndex].interval;
     }
     return -1
 }
@@ -82,8 +83,8 @@ function getStatus(userId, taskName) {
     const userData = loadUserData();
     const taskIndex = getTaskIdx(userId, taskName);
 
-    if (userData[userId] && userData[userId][taskIndex]) {
-        return userData[userId][taskIndex].status;
+    if (userData[userId] && userData[userId].tasks[taskIndex]) {
+        return userData[userId].tasks[taskIndex].status;
     }
 }
 
@@ -91,19 +92,35 @@ function getMessageState(userId, taskName) {
     const userData = loadUserData();
     const taskIndex = getTaskIdx(userId, taskName);
 
-    if (userData[userId] && userData[userId][taskIndex]) {
-        return userData[userId][taskIndex].deletedMsg;
+    if (userData[userId] && userData[userId].tasks[taskIndex]) {
+        return userData[userId].tasks[taskIndex].deletedMsg;
     }
 }
 
-function setMessageState(userId, taskName) {
-    const userData = loadUserData();
-    const taskIndex = getTaskIdx(userId, taskName);
-
-    if (userData[userId] && userData[userId][taskIndex]) {
-        userData[userId][taskIndex].deletedMsg = true
+function getDel(userId) {
+    const userData = loadUserData()
+    
+    if (userData[userId]) {
+        return userData[userId].del
+    } else {
+        return 'User Not Found'
     }
-    saveUserData(userData)
+}
+
+function getTimezone(userId) {
+    const userData = loadUserData()
+
+    if (userData[userId]) {
+        return userData[userId].timezone
+    }
+}
+
+function setTimezone(userId, zone) {
+    const userData = loadUserData();
+    
+    if (userData[userId]) {
+        userData[userId].timezone = zone
+    }
 }
 
 
@@ -117,6 +134,8 @@ module.exports = {
     getInterval,
     getStatus,
     getMessageState,
-    setMessageState,
+    getDel,
+    getTimezone,
+    setTimezone,
 };
 

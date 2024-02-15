@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const {loadUserData, saveUserData, getTaskIdx, updateTask, getDueDate, getMessageState} = require('../../Handlers/dataHandler');
+const {loadUserData, saveUserData, getTaskIdx, updateTask, getDueDate, getMessageState, getStatus, getDel} = require('../../Handlers/dataHandler');
 const { formatHourTime, formatMinTime, timeLeft, getEstDate} = require('../../Handlers/timeHandler');
 
 module.exports = {
@@ -105,6 +105,23 @@ module.exports = {
                     });
 
                     const interval = setInterval(() => {
+                        if (getTaskIdx(user.id, name) == -1) {
+                            const del = getDel(user.id)
+                            if (del != 'User Not Found') {
+                                if (!del.includes(name)) {
+                                    initialMessage.delete();
+                                    clearInterval(interval)
+                                    return;
+                                } else {
+                                    del.splice(del.findIndex(item => item === name), 1)
+                                    const userData = loadUserData()
+                                    userData[user.id].del = del
+                                    saveUserData(userData)
+                                    clearInterval(interval)
+                                    return;
+                                }
+                            }
+                        }
                         const dueDate = new Date(getDueDate(user.id, name))
                         const updatedTime = timeLeft(dueDate);
                         if (updatedTime < 0) {
@@ -137,6 +154,16 @@ module.exports = {
                                 .setColor('203D46');
                             
                             if (getMessageState(user.id, name) == false) {
+                                if (getStatus(user.id, name) == 'Completed') {
+                                    updatedEmbed.data.fields[3] = { name: 'Status', value: 'Completed', inline: false }
+                                    const em = EmbedBuilder.from(updatedEmbed).setColor('Green')
+                                    initialMessage.edit({
+                                        embeds: [em],
+                                        components: [],
+                                    });
+                                    clearInterval(interval)
+                                    return
+                                }
                                 initialMessage.edit({
                                     embeds: [updatedEmbed],
                                     components: [buttons],
@@ -154,10 +181,14 @@ module.exports = {
                     };
 
                     if (!userData[user.id]) {
-                        userData[user.id] = [];
+                        userData[user.id] = {
+                            tasks: [],
+                            del: [],
+                            timezone: 'EST'
+                        };
                     }
 
-                    userData[user.id].push(taskData);
+                    userData[user.id].tasks.push(taskData);
                     saveUserData(userData);
                 } else {
                     await interaction.reply({ content: 'Invalid date format. Please enter a valid date.', ephemeral: true });
@@ -208,6 +239,23 @@ module.exports = {
                             content: 'Successfully created a new task:'
                         });
                         const interval = setInterval(() => {
+                            if (getTaskIdx(user.id, name) == -1) {
+                                const del = getDel(user.id)
+                                if (del != 'User Not Found') {
+                                    if (!del.includes(name)) {
+                                        initialMessage.delete();
+                                        clearInterval(interval)
+                                        return;
+                                    } else {
+                                        del.splice(del.findIndex(item => item === name), 1)
+                                        const userData = loadUserData()
+                                        userData[user.id].del = del
+                                        saveUserData(userData)
+                                        clearInterval(interval)
+                                        return;
+                                    }
+                                }
+                            }
                             const dueDate = new Date(getDueDate(user.id, name))
                             const updatedTime = timeLeft(dueDate);
                             if (updatedTime < 0) {
@@ -241,6 +289,16 @@ module.exports = {
                                     .setColor('203D46');
 
                                 if (getMessageState(user.id, name) == false) {
+                                    if (getStatus(user.id, name) == 'Completed') {
+                                        updatedEmbed.data.fields[3] = { name: 'Status', value: 'Completed', inline: false }
+                                        const em = EmbedBuilder.from(updatedEmbed).setColor('Green')
+                                        initialMessage.edit({
+                                            embeds: [em],
+                                            components: [],
+                                        });
+                                        clearInterval(interval)
+                                        return;
+                                    }
                                     initialMessage.edit({
                                         embeds: [updatedEmbed],
                                         components: [buttons],
@@ -255,13 +313,17 @@ module.exports = {
                             status: 'In progress',
                             interval: `${interval}`,
                             deletedMsg: false
-                            };
+                        };
 
                         if (!userData[user.id]) {
-                            userData[user.id] = [];
+                            userData[user.id] = {
+                                tasks: [],
+                                del: [],
+                                timezone: 'EST'
+                            };
                         }
 
-                        userData[user.id].push(taskData);
+                        userData[user.id].tasks.push(taskData);
                         saveUserData(userData);
 
                     } else {
@@ -282,19 +344,55 @@ module.exports = {
                         content: 'Successfully created a new task:',
                     });
 
+                    const interval = setInterval(() => {
+                        if (getTaskIdx(user.id, name) == -1) {
+                            const del = getDel(user.id)
+                            if (del != 'User Not Found') {
+                                if (!del.includes(name)) {
+                                    initialMessage.delete();
+                                    clearInterval(interval)
+                                    return;
+                                } else {
+                                    del.splice(del.findIndex(item => item === name), 1)
+                                    const userData = loadUserData()
+                                    userData[user.id].del = del
+                                    saveUserData(userData)                       
+                                    clearInterval(interval)
+                                    return;
+                                }
+                            }
+                        }
+                        if (getMessageState(user.id, name) == false) {
+                            if (getStatus(user.id, name) == 'Completed') {
+                                embed.data.fields[1] = { name: 'Status', value: 'Completed', inline: false }
+                                const em = EmbedBuilder.from(embed).setColor('Green')
+                                initialMessage.edit({
+                                    embeds: [em],
+                                    components: [],
+                                });
+                                clearInterval(interval)
+                                return;
+                            }
+                        }
+                    }, 10000);
+
                     const taskData = {
                         name: name,
                         due: null,
                         status: 'In progress',
-                        interval: null,
+                        interval: `${interval}`,
                         deletedMsg: false
                     };
 
                     if (!userData[user.id]) {
-                        userData[user.id] = [];
+                        userData[user.id] = {
+                            tasks: [],
+                            del: [],
+                            timezone: 'EST'
+                        };
                     }
 
-                    userData[user.id].push(taskData);
+                    userData[user.id].tasks.push(taskData);
                     saveUserData(userData);
                 }
             }
