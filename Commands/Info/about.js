@@ -9,11 +9,11 @@ module.exports = {
                 .setTitle(`About ${client.user.username}`)
                 .setDescription('Task-management bot with real-time updating')
                 .setFields(
-                    { name: '1. Deletion', value: 'Any task can be deleted before its due date.' },
+                    { name: '1. Deletion', value: 'Any task can be deleted at any time.' },
                     { name: '2. Saving', value: 'All tasks except the ones deleted by user will be saved, and can be viewed using the \`\`/list\`\` command later on.'},
-                    { name: '3. Task embeds', value: 'Once created, make sure to pin/keep the task embed as **it\'s the only way to interact with tasks.**' },
-                    { name: '4. Live updating', value: 'Time left for each task will be updated every minute.' },
-                    { name: '5. Expiry', value: 'Expired tasks that were not completed will automatically be labeled "Unfinished", and the user will not be able to interact with them anymore.'},
+                    { name: '3. Live updating', value: 'Once created, tasks embeds will update every 10 seconds, showing the new time left for tasks.' },
+                    { name: '4. Expiry', value: 'Expired incomplete tasks will automatically be labeled "Unfinished", and the user will not be able to interact with them anymore.'},
+                    { name: '5. Timezones', value: 'The default user\'s timezone is set to Eastern Standard Time.' },
                     { name: 'Developed by', value: '[@konstivo](https://github.com/mohammadalshikh)', inline: false},
                 )
                 .setColor('203D46');
