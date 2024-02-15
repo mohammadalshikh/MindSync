@@ -87,15 +87,6 @@ function getStatus(userId, taskName) {
     }
 }
 
-function getMessageId(userId, taskName) {
-    const userData = loadUserData();
-    const taskIndex = getTaskIdx(userId, taskName);
-
-    if (userData[userId] && userData[userId][taskIndex]) {
-        return userData[userId][taskIndex].messageId;
-    }
-}
-
 function getMessageState(userId, taskName) {
     const userData = loadUserData();
     const taskIndex = getTaskIdx(userId, taskName);
@@ -125,7 +116,6 @@ module.exports = {
     getDueDate,
     getInterval,
     getStatus,
-    getMessageId,
     getMessageState,
     setMessageState,
 };

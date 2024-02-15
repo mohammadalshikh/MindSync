@@ -1,5 +1,5 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { updateTask, getDueDate, getMessageId, getInterval, getTaskIdx, getStatus } = require('../../Handlers/dataHandler');
+const { SlashCommandBuilder, EmbedBuilder} = require('discord.js');
+const { updateTask, getDueDate, getInterval, getTaskIdx, getStatus } = require('../../Handlers/dataHandler');
 const { timeLeft, formatHourTime, formatMinTime } = require('../../Handlers/timeHandler');
 
 module.exports = {
@@ -61,16 +61,31 @@ module.exports = {
                             clearInterval(getInterval(user.id, name))
                             updateTask(user.id, name, 'Completed')
                         
-                            // try {
-                            //     const messageId = getMessageId(user.id, name)
-                            //     const message = await interaction.channel.messages.fetch(messageId);
-                            //     await message.edit({
-                            //         components: []
-                            //     });
-                            //     console.log("Components removed successfully.");
-                            // } catch (error) {
-                            //     console.error("Error removing components:", error);
-                            // }
+                            interaction.channel.messages.fetch({limit: 100})
+                                .then(messages => {
+                                    const m = messages.filter(
+                                        message => message.hasOwnProperty('components') &&
+                                        message.components.length == 1 && 
+                                        message.components[0].hasOwnProperty('data')
+                                    )
+                                    m.forEach((message, messageId) => {
+                                        if (message.components[0].components[0].data.custom_id.split('-')[2] == user.id 
+                                         && message.components[0].components[0].data.custom_id.split('-')[3] == name) {
+                                            
+                                            const embed = message.embeds[0];
+                                            embed.data.fields[3] = { name: 'Status', value: 'Completed', inline: false }
+                                            const completeEmbed = EmbedBuilder.from(embed).setColor('Green')
+
+                                            message.edit({
+                                                embeds: [completeEmbed],
+                                                components: []
+                                            })
+                                            console.log('Removed buttons from original message.')
+                                        }
+                                    })
+                                })
+                                .catch(console.error);
+                            
                             
                             await interaction.reply({
                                 embeds: [embed],
@@ -86,6 +101,31 @@ module.exports = {
                             )
                             .setColor('Green');
     
+                        interaction.channel.messages.fetch({ limit: 100 })
+                            .then(messages => {
+                                const m = messages.filter(
+                                    message => message.hasOwnProperty('components') &&
+                                        message.components.length == 1 &&
+                                        message.components[0].hasOwnProperty('data')
+                                )
+                                m.forEach((message, messageId) => {
+                                    if (message.components[0].components[0].data.custom_id.split('-')[2] == user.id
+                                        && message.components[0].components[0].data.custom_id.split('-')[3] == name) {
+
+                                        const embed = message.embeds[0];
+                                        embed.data.fields[1] = { name: 'Status', value: 'Completed', inline: false }
+                                        const completeEmbed = EmbedBuilder.from(embed).setColor('Green')
+
+                                        message.edit({
+                                            embeds: [completeEmbed],
+                                            components: []
+                                        })
+                                        console.log('Removed buttons from original message.')
+                                    }
+                                })
+                            })
+                            .catch(console.error);
+
                         await interaction.reply({
                             embeds: [embed],
                             content: 'Task successfully completed! 💪'

@@ -152,7 +152,6 @@ module.exports = {
                         due: dueDate,
                         status: 'In progress',
                         interval: `${interval}`,
-                        messageId: initialMessage.id,
                         deletedMsg: false
                     };
 
@@ -257,7 +256,6 @@ module.exports = {
                             due: dueDate,
                             status: 'In progress',
                             interval: `${interval}`,
-                            messageId: initialMessage.id,
                             deletedMsg: false
                             };
 
@@ -291,7 +289,6 @@ module.exports = {
                         due: null,
                         status: 'In progress',
                         interval: null,
-                        messageId: initialMessage.id,
                         deletedMsg: false
                     };
 
