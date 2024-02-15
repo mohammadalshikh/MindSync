@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { updateTask, deleteTask, getDueDate, getInterval } = require('../../Handlers/dataHandler');
+const { updateTask, deleteTask, getDueDate, getInterval, getStatus } = require('../../Handlers/dataHandler');
 const { timeLeft } = require('../../Handlers/timeHandler');
 
 module.exports = {
@@ -12,6 +12,14 @@ module.exports = {
         if (customId.startsWith('task-delete') || customId.startsWith('task-complete')) {
             if (member.user.id !== customId.split('-')[2]) {
                 return interaction.reply({ content: "You can't complete or delete other people's tasks!", ephemeral: true });
+            }
+            const n = customId.split('-')[3]
+            const r = getStatus(member.user.id, n)
+            if (r == 'Completed' || r == 'Unfinished') {
+                if (customId.startsWith('task-complete')) {
+                    await interaction.message.delete()
+                    return interaction.reply({ content: "You can no longer interact with this task.", ephemeral: true });
+                }
             }
 
             const embed = interaction.message.embeds[0];
