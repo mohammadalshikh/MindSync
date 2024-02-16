@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { get } = require('http');
 const path = require('path');
 
 function loadUserData() {
@@ -112,6 +113,9 @@ function getTimezone(userId) {
 
     if (userData[userId]) {
         return userData[userId].timezone
+    } else {
+        setTimezone(userId, 'America/Toronto')
+        getTimezone(userId)
     }
 }
 
@@ -120,7 +124,14 @@ function setTimezone(userId, zone) {
     
     if (userData[userId]) {
         userData[userId].timezone = zone
+    } else {
+        userData[userId] = {
+            tasks: [],
+            del: [],
+            timezone: zone
+        }
     }
+    saveUserData(userData)
 }
 
 

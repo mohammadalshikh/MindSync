@@ -31,7 +31,7 @@ module.exports = {
             } else {
                 if (task.due != null) {
                     dueDate = new Date(task.due)
-                    const time = timeLeft(dueDate)
+                    const time = timeLeft(dueDate, user.id)
                     if (time == -1) {
                         clearInterval(user.id, task.name)
                         updateTask(user.id, task.name, 'Unfinished')

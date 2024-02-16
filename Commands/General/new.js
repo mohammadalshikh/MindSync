@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const {loadUserData, saveUserData, getTaskIdx, updateTask, getDueDate, getMessageState, getStatus, getDel} = require('../../Handlers/dataHandler');
-const { formatHourTime, formatMinTime, timeLeft, getEstDate} = require('../../Handlers/timeHandler');
+const {loadUserData, saveUserData, getTaskIdx, updateTask, getDueDate, getMessageState, getStatus, getDel, getTimezone, setTimezone} = require('../../Handlers/dataHandler');
+const { formatHourTime, formatMinTime, timeLeft, getZoneDate} = require('../../Handlers/timeHandler');
 
 module.exports = {
 
@@ -82,12 +82,12 @@ module.exports = {
                         }
                     }
 
-                    if (getEstDate() > dueDate) {
+                    if (getZoneDate(user.id) > dueDate) {
                         await interaction.reply({content: 'The due date and time cannot be before the present. Please enter a valid date and time.', ephemeral: true});
                         return;
                     }
 
-                    const time = timeLeft(dueDate);
+                    const time = timeLeft(dueDate, user.id);
 
                     const embed = new EmbedBuilder()
                         .setFields(
@@ -123,7 +123,7 @@ module.exports = {
                             }
                         }
                         const dueDate = new Date(getDueDate(user.id, name))
-                        const updatedTime = timeLeft(dueDate);
+                        const updatedTime = timeLeft(dueDate, user.id);
                         if (updatedTime < 0) {
                             const updatedEmbed = new EmbedBuilder()
                                 .setFields(
@@ -180,14 +180,7 @@ module.exports = {
                         deletedMsg: false
                     };
 
-                    if (!userData[user.id]) {
-                        userData[user.id] = {
-                            tasks: [],
-                            del: [],
-                            timezone: 'EST'
-                        };
-                    }
-
+                    getTimezone(user.id)
                     userData[user.id].tasks.push(taskData);
                     saveUserData(userData);
                 } else {
@@ -207,7 +200,7 @@ module.exports = {
                             return;
                         }
 
-                        const date = getEstDate()
+                        const date = getZoneDate(user.id)
 
                         dueDate = new Date(
                             date.getFullYear(),
@@ -222,7 +215,7 @@ module.exports = {
                             return;
                         }
 
-                        const time = timeLeft(dueDate);
+                        const time = timeLeft(dueDate, user.id);
 
                         const embed = new EmbedBuilder()
                             .setFields(
@@ -257,7 +250,7 @@ module.exports = {
                                 }
                             }
                             const dueDate = new Date(getDueDate(user.id, name))
-                            const updatedTime = timeLeft(dueDate);
+                            const updatedTime = timeLeft(dueDate, user.id);
                             if (updatedTime < 0) {
                                 const updatedEmbed = new EmbedBuilder()
                                     .setFields(
@@ -319,10 +312,11 @@ module.exports = {
                             userData[user.id] = {
                                 tasks: [],
                                 del: [],
-                                timezone: 'EST'
+                                timezone: 'America/Toronto'
                             };
                         }
 
+                        getTimezone(user.id)
                         userData[user.id].tasks.push(taskData);
                         saveUserData(userData);
 
@@ -388,10 +382,11 @@ module.exports = {
                         userData[user.id] = {
                             tasks: [],
                             del: [],
-                            timezone: 'EST'
+                            timezone: 'America/Toronto'
                         };
                     }
 
+                    getTimezone(user.id)
                     userData[user.id].tasks.push(taskData);
                     saveUserData(userData);
                 }

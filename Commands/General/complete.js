@@ -32,7 +32,7 @@ module.exports = {
                     date = getDueDate(user.id, name)
                     if (date != null) {
                         dueDate = new Date(date)
-                        const time = timeLeft(dueDate)
+                        const time = timeLeft(dueDate, user.id)
                         if (time == -1) {
                             clearInterval(getInterval(user.id, name))
                             const embed = new EmbedBuilder()
