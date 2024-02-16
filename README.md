@@ -1,3 +1,5 @@
+![Static Badge](https://img.shields.io/badge/bot_status-online-green)
+
 # MindSync (Discord Bot)
 Task-management Discord bot with real-time updating.
 
