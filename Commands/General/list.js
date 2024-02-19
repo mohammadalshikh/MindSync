@@ -71,6 +71,7 @@ module.exports = {
             .setColor('Green')
 
         if (completedTasks.length > 0) {
+            i = 0
             for (const completedTask of completedTasks) {
                 if (completedTask.due != null) {
                     embedComplete.addFields(
@@ -80,7 +81,9 @@ module.exports = {
                     embedComplete.addFields(
                         { name: completedTask.name, value: 'Indefinite', inline: false },
                     )
-                }  
+                }
+                i += 1;
+                if (i == 25) break; 
             }
         } else {
             embedComplete.setFields({ name: ' ', value: 'No previous tasks completed', inline: false });
@@ -93,6 +96,7 @@ module.exports = {
             .setColor('Orange')
 
         if (unfinishedTasks.length > 0) {
+            i = 0
             for (const unfinishedTask of unfinishedTasks) {
                 if (unfinishedTask.due != null) {
                     embedUnfinished.addFields(
@@ -103,6 +107,8 @@ module.exports = {
                         { name: unfinishedTask.name, value: 'Indefinite', inline: false },
                     )
                 }
+                i += 1;
+                if (i == 25) break;
             }
         } else {
             embedUnfinished.setFields({ name: ' ', value: 'No previous tasks unfinished', inline: false });
@@ -115,6 +121,7 @@ module.exports = {
             .setColor('203D46')
 
         if (inProgressTasks.length > 0) {
+            i = 0
             for (const inProgressTask of inProgressTasks) {
                 if (inProgressTask.due != null) {
                     embedInProgress.addFields(
@@ -125,6 +132,8 @@ module.exports = {
                         { name: inProgressTask.name, value: 'Indefinite', inline: false },
                     )
                 }
+                i += 1;
+                if (i == 25) break;
             }
         } else {
             embedInProgress.setFields({ name: ' ', value: 'No tasks in progress', inline: false });
