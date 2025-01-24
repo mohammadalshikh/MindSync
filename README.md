@@ -1,7 +1,7 @@
 ![Static Badge](https://img.shields.io/badge/bot_status-online-green)
 
 # MindSync (Discord Bot)
-Task-management Discord bot with real-time updating.
+Task-management Discord bot with AI-assistance and real-time updating.
 
 ## Showcase
 To use the bot directly, you can invite it to your server by clicking on the link provided under the 'About' section top-right.
@@ -32,7 +32,7 @@ npm install moment moment-timezone
 3. Create a `.env` file in the root directory and populate it with your Bot Token.
 
 ```env
-TOKEN=replace_with_your_token
+DISCORD_TOKEN=replace_with_your_token
 ```
 
 4. Start the bot.

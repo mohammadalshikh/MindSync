@@ -24,6 +24,17 @@ function saveUserData(userData) {
     }
 }
 
+function getSystemPrompt() {
+    const filePath = path.resolve(__dirname, '../Data/prompt.txt');
+    try {
+        const data = fs.readFileSync(filePath, 'utf8');
+        return data;
+    } catch (error) {
+        console.error('Error reading system prompt file:', error.message);
+        return {};
+    }
+}
+
 function updateTask(userId, taskName, status) {
     const userData = loadUserData();
     const taskIndex = getTaskIdx(userId, taskName);
@@ -119,6 +130,29 @@ function getTimezone(userId) {
     }
 }
 
+function getUserTasks(userId) {
+    const userData = loadUserData();
+    if (userData[userId]) {
+        const userTasks = userData[userId].tasks;
+        if (userTasks) {
+            let tasksData = '';
+            let i = 1;
+            for (const userTask in userTasks) {
+                const data = `Task #${i}\n` + 
+                             `Name: ${userTasks[userTask].name}\n` + 
+                             `Due: ${userTasks[userTask].due}\n` +
+                             `Status: ${userTasks[userTask].status}\n\n`
+                i += 1;
+                tasksData += data
+            }
+            return tasksData
+        } else {
+            return 'No data';
+        }
+    }
+    
+}
+
 function setTimezone(userId, zone) {
     const userData = loadUserData();
     
@@ -138,6 +172,7 @@ function setTimezone(userId, zone) {
 module.exports = {
     loadUserData,
     saveUserData,
+    getSystemPrompt,
     updateTask,
     deleteTask,
     getTaskIdx,
@@ -146,6 +181,7 @@ module.exports = {
     getStatus,
     getMessageState,
     getDel,
+    getUserTasks,
     getTimezone,
     setTimezone,
 };

@@ -1,6 +1,7 @@
 const {Client, GatewayIntentBits, Partials, Collection} = require('discord.js');
 const {Guilds, GuildMembers, GuildMessages, MessageContent} = GatewayIntentBits;
 const {User, Message, GuildMember, ThreadMember, Channel} = Partials;
+const { OpenAI } = require('openai');
 require('dotenv').config();
 
 const client = new Client({
@@ -13,7 +14,13 @@ const {loadCommands} = require('./Handlers/commandHandler');
 
 client.commands = new Collection();
 
-client.login(process.env.TOKEN).then(() => {
+client.login(process.env.DISCORD_TOKEN).then(() => {
     loadEvents(client);
     loadCommands(client);
 });
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_KEY,
+})
+
+client.openai = openai
